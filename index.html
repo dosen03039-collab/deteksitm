@@ -20,27 +20,46 @@
       color: #007AFF;
     }
 
-    video, #preview {
+    #preview {
       margin-top: 20px;
       max-width: 300px;
       max-height: 300px;
       border-radius: 10px;
       border: 1px solid #ccc;
+      display: none;
     }
 
-    button {
-      padding: 10px 20px;
-      margin-top: 15px;
+    .custom-file-btn {
+      display: inline-block;
+      padding: 15px 30px;
+      margin-top: 20px;
       font-size: 16px;
-      background-color: #007AFF;
       color: white;
+      background-color: #007AFF;
       border: none;
-      border-radius: 5px;
+      border-radius: 10px;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .custom-file-btn:hover {
+      background-color: #005FCC;
+    }
+
+    #predictBtn {
+      display: inline-block;
+      padding: 12px 25px;
+      margin-top: 20px;
+      font-size: 16px;
+      color: white;
+      background-color: #28A745;
+      border: none;
+      border-radius: 10px;
       cursor: pointer;
     }
 
-    button:hover {
-      background-color: #005FCC;
+    #predictBtn:hover {
+      background-color: #1e7e34;
     }
 
     #result {
@@ -56,16 +75,21 @@
       font-size: 16px;
       color: #333;
     }
+
+    /* sembunyikan input file default */
+    #imageInput {
+      display: none;
+    }
   </style>
 </head>
 <body>
   <h1>Deteksi Bentuk</h1>
 
+  <!-- tombol custom pilih file -->
+  <label for="imageInput" class="custom-file-btn">Pilih Galeri atau Kamera</label>
   <input type="file" id="imageInput" accept="image/*" />
-  <video id="camera" autoplay playsinline style="display:none;"></video>
-  <button id="startCameraBtn">Buka Kamera</button>
-  <button id="captureBtn" style="display:none;">Ambil Foto</button>
-  <img id="preview" src="" alt="Preview Gambar" style="display:none;" />
+
+  <img id="preview" src="" alt="Preview Gambar" />
   <button id="predictBtn">Prediksi</button>
 
   <div id="loading">Memproses prediksi...</div>
@@ -87,12 +111,7 @@
     const resultDiv = document.getElementById("result");
     const loadingDiv = document.getElementById("loading");
 
-    const camera = document.getElementById("camera");
-    const startCameraBtn = document.getElementById("startCameraBtn");
-    const captureBtn = document.getElementById("captureBtn");
-
     let selectedImage = null;
-    let stream = null;
 
     // Upload gambar
     imageInput.addEventListener("change", (e) => {
@@ -109,34 +128,10 @@
       }
     });
 
-    // Buka kamera
-    startCameraBtn.addEventListener("click", async () => {
-      stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      camera.srcObject = stream;
-      camera.style.display = "block";
-      captureBtn.style.display = "inline-block";
-      preview.style.display = "none";
-      selectedImage = null;
-      resultDiv.innerText = "";
-    });
-
-    // Ambil foto dari kamera
-    captureBtn.addEventListener("click", () => {
-      const canvas = document.createElement("canvas");
-      canvas.width = camera.videoWidth;
-      canvas.height = camera.videoHeight;
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(camera, 0, 0, canvas.width, canvas.height);
-      selectedImage = canvas.toDataURL("image/png");
-      preview.src = selectedImage;
-      preview.style.display = "block";
-      resultDiv.innerText = "";
-    });
-
     // Prediksi gambar
     predictBtn.addEventListener("click", () => {
       if (!selectedImage) {
-        alert("Silakan pilih gambar atau ambil foto terlebih dahulu!");
+        alert("Silakan pilih gambar terlebih dahulu!");
         return;
       }
 
